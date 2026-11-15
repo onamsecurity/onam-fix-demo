@@ -1,6 +1,6 @@
-# Onam fix-PR demo: a security group deliberately open to the internet, attached to nothing.
-# Onam links the live group to this file through its git_repo / git_file tags and can open a
-# pull request that narrows the rule. Nothing here is deployed by CI; the group was created by hand.
+variable "allowed_ingress_cidrs" {
+  type = list(string)
+}
 
 data "aws_vpc" "default" {
   default = true
@@ -12,11 +12,11 @@ resource "aws_security_group" "onam_fix_demo" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description = "SSH from anywhere (deliberately wrong for the demo)"
+    description = "SSH from allowed IPs"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_ingress_cidrs
   }
 
   egress {
